@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using Infrastructure.Messaging.Configuration;
 using Infrastructure.Messaging.Handlers.Interfaces;
+using Koala.Infrastructure.Messaging.Handlers.Interfaces;
 using Koala.MessagePublisherService.Services;
 using Koala.MessagePublisherService.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;

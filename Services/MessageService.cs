@@ -1,7 +1,6 @@
 using Discord.WebSocket;
-using Infrastructure.Common.Constants;
-using Infrastructure.Common.Models;
-using Infrastructure.Messaging.Handlers.Interfaces;
+using Koala.Infrastructure.Messaging.Handlers.Interfaces;
+using Koala.MessagePublisherService.Models;
 using Koala.MessagePublisherService.Services.Interfaces;
 
 namespace Koala.MessagePublisherService.Services;
@@ -23,22 +22,22 @@ public class MessageService : IMessageService
         if (arg.Author.IsBot) return;
         if (arg is not SocketUserMessage message) return;
         
-        var messageReceived = new BaseMessage()
+        var messageReceived = new Message()
         {
-            Message = message.Content,
-            Channel = new BaseChannel
+            Content = message.Content,
+            Channel = new Channel()
             {
                 Id = message.Channel.Id,
                 Name = message.Channel.Name
             },
-            User = new BaseUser
+            User = new User
             {
                 Id = message.Author.Id,
                 Username = message.Author.Username
             }
         };
         
-        await _publisher.PublishMessageAsync(MessageTypes.MessageReceived, messageReceived, RoutingKeys.NONE);
+        await _publisher.PublishMessageAsync("MESSAGE_RECEIVED", messageReceived, string.Empty);
     }
 
     public void Initialize()

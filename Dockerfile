@@ -1,7 +1,7 @@
-﻿FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/runtime:6.0-bullseye-slim AS base
+﻿FROM mcr.microsoft.com/dotnet/runtime:6.0-amd64 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-amd64 AS build
 WORKDIR /src
 COPY ["Koala.Messaging.Publisher.Service.csproj", "./"]
 RUN dotnet restore "Koala.Messaging.Publisher.Service.csproj"

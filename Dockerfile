@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:6.0-bullseye-slim AS base
+﻿FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/runtime:6.0-bullseye-slim AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim AS build

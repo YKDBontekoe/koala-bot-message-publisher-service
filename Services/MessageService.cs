@@ -18,7 +18,6 @@ public class MessageService : IMessageService
         _client = client;
         _serviceBusClient = serviceBusClient;
         _configuration = configuration;
-        _client.MessageReceived += Client_MessageReceived;
     }
 
     // Read all incoming messages and log them
@@ -31,6 +30,8 @@ public class MessageService : IMessageService
         {
             Id = message.Id,
             Content = message.Content,
+            Time = message.Timestamp,
+            EditedTime = message.EditedTimestamp,
             Channel = new Channel
             {
                 Id = message.Channel.Id,
@@ -42,6 +43,15 @@ public class MessageService : IMessageService
                 Username = message.Author.Username
             }
         };
+
+        if (arg.Channel is SocketGuildChannel guildChannel)
+        {
+            messageReceived.Guild = new Guild
+            {
+                Id = guildChannel.Guild.Id,
+                Name = guildChannel.Guild.Name,
+            };
+        }
         
         var sender = _serviceBusClient.CreateSender(_configuration["ServiceBus:QueueName"]);
         await sender.SendMessageAsync(new ServiceBusMessage(JsonConvert.SerializeObject(messageReceived)));

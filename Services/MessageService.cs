@@ -1,26 +1,33 @@
 using Azure.Messaging.ServiceBus;
+using Discord;
 using Discord.WebSocket;
 using Koala.MessagePublisherService.Models;
+using Koala.MessagePublisherService.Options;
 using Koala.MessagePublisherService.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Koala.MessagePublisherService.Services;
 
 public class MessageService : IMessageService
 {
-    private readonly BaseSocketClient _client;
+    private readonly DiscordSocketClient _client;
     private readonly ServiceBusClient _serviceBusClient;
-    private readonly IConfiguration _configuration;
+    private readonly ServiceBusOptions _serviceBusOptions;
+    private readonly DiscordOptions _discordOptions;
 
-    public MessageService(BaseSocketClient client, ServiceBusClient serviceBusClient, IConfiguration configuration)
+    public MessageService(DiscordSocketClient client, ServiceBusClient serviceBusClient, IOptions<DiscordOptions> discordOptions, IOptions<ServiceBusOptions> serviceBusOptions, IConfiguration configuration)
     {
         _client = client;
         _serviceBusClient = serviceBusClient;
-        _configuration = configuration;
+        _serviceBusOptions = serviceBusOptions != null ? serviceBusOptions.Value : throw new ArgumentNullException(nameof(serviceBusOptions));
+        _discordOptions = discordOptions != null ? discordOptions.Value : throw new ArgumentNullException(nameof(discordOptions));
+        
+        InitializeDiscordClient();
     }
-
-    // Read all incoming messages and log them
+    
+    // Read all incoming messages from the Discord client and send them to the Service Bus
     private async Task Client_MessageReceived(SocketMessage arg)
     {
         if (arg.Author.IsBot) return;
@@ -53,17 +60,26 @@ public class MessageService : IMessageService
             };
         }
         
-        var sender = _serviceBusClient.CreateSender(_configuration["ServiceBus:QueueName"]);
+        var sender = _serviceBusClient.CreateSender(_serviceBusOptions.QueueName);
         await sender.SendMessageAsync(new ServiceBusMessage(JsonConvert.SerializeObject(messageReceived)));
     }
 
+    // Initialize the discord message events
     public void Initialize()
     {
         _client.MessageReceived += Client_MessageReceived;
     }
 
+    // Dispose of the client when the service is disposed
     public void Dispose()
     {
         _client.MessageReceived -= Client_MessageReceived;
+    }
+    
+    // Initialize the Discord client and connect to the gateway
+    private void InitializeDiscordClient()
+    {
+        _client.LoginAsync(TokenType.Bot, _discordOptions.Token);
+        _client.StartAsync();
     }
 }

@@ -20,7 +20,12 @@
 
     <ItemGroup>
         <None Update="appsettings.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.Development.json" Condition="Exists('appsettings.Development.json')">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 </Project>

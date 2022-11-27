@@ -11,11 +11,11 @@ spec:
         maxUnavailable: 1
     selector:
         matchLabels:
-          deploy: koala-message-publisher-service
+          app: koala-message-publisher-service
     template:
         metadata:
           labels:
-            deploy: koala-message-publisher-service
+            app: koala-message-publisher-service
         spec:
           containers:
           - name: koala-message-publisher-service

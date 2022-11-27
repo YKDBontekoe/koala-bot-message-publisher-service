@@ -27,11 +27,10 @@ kind: Service
 metadata:
   name: koala-message-publisher-service
 spec:
-    selector:
-        app: koala-message-publisher-service
-    ports:
-        - protocol: TCP
-          port: 30001
-          targetPort: 5001
-    type: LoadBalancer
-    
+  selector:
+      app: koala-message-publisher-service
+  ports:
+      - protocol: TCP
+        port: 30001
+        targetPort: 5001
+  type: LoadBalancer

@@ -20,6 +20,8 @@ spec:
           containers:
           - name: koala-message-publisher-service
             image: koala-message-publisher-service
+            imagePullPolicy: Always
+            restartPolicy: Always
             ports:
               - containerPort: 5001
             env:

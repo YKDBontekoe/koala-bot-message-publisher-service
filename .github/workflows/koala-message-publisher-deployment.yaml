@@ -37,6 +37,7 @@ jobs:
         needs:
             - buildImage
         steps:
+            - uses: actions/checkout@v3
             - uses: microsoft/variable-substitution@v1
               name: App Settings Variable Substitution
               with:
@@ -44,7 +45,6 @@ jobs:
               env:
                 ServiceBus.ConnectionString: ${{ secrets.SERVICE_BUS_CONNECTION_STRING }}
                 Discord.Token: ${{ secrets.DISCORD_TOKEN }}
-            - uses: actions/checkout@v3
             - uses: azure/login@v1.4.3
               name: Azure login
               with:

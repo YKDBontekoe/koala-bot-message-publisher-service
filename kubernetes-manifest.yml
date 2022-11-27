@@ -2,15 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: koala-message-publisher-service
-  spec:
+spec:
     replicas: 1
+    strategy: Recreate
     selector:
         matchLabels:
-          app: koala-message-publisher-service
+          deploy: koala-message-publisher-service
     template:
         metadata:
           labels:
-            app: koala-message-publisher-service
+            deploy: koala-message-publisher-service
         spec:
           containers:
           - name: koala-message-publisher-service
@@ -20,17 +21,3 @@ metadata:
             env:
               - name: DOTNET_ENVIRONMENT
                 value: "Production"
-                
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: koala-message-publisher-service
-spec:
-  selector:
-      app: koala-message-publisher-service
-  ports:
-      - protocol: TCP
-        port: 30001
-        targetPort: 5001
-  type: LoadBalancer

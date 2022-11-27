@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "koalacluster-bc81"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "koalacluster-bc81"
+  template:
+    metadata:
+      labels:
+        app: "koalacluster-bc81"
+    spec:
+      containers:
+        - name: "koalacluster-bc81"
+          image: "ykdbonteregistry.azurecr.io/koalacluster"
+          ports:
+          - containerPort: 80

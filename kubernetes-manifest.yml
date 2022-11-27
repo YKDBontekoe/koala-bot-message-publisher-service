@@ -1,0 +1,36 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: koala-message-publisher-service
+spec:
+    selector:
+        app: koala-message-publisher-service
+    type: LoadBalancer
+    ports:
+    - port: 32001
+      targetPort: 5001
+      protocol: TCP
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: koala-message-publisher-service
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+          app: koala-message-publisher-service
+    template:
+        metadata:
+          labels:
+            app: koala-message-publisher-service
+        spec:
+          containers:
+          - name: koala-message-publisher-service
+            image: koala-message-publisher-service
+            ports:
+              - containerPort: 5001
+            env:
+              - name: ASPNETCORE_ENVIRONMENT
+                value: "Production"

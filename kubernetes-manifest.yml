@@ -17,11 +17,11 @@ spec:
           labels:
             app: koala-message-publisher-service
         spec:
+          restartPolicy: Always
           containers:
           - name: koala-message-publisher-service
             image: koala-message-publisher-service
             imagePullPolicy: Always
-            restartPolicy: Always
             ports:
               - containerPort: 5001
             env:

@@ -7,6 +7,7 @@ using Koala.MessagePublisherService.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Attachment = Koala.MessagePublisherService.Models.Attachment;
 
 namespace Koala.MessagePublisherService.Services;
 
@@ -17,7 +18,7 @@ public class MessageService : IMessageService
     private readonly ServiceBusOptions _serviceBusOptions;
     private readonly DiscordOptions _discordOptions;
 
-    public MessageService(DiscordSocketClient client, ServiceBusClient serviceBusClient, IOptions<DiscordOptions> discordOptions, IOptions<ServiceBusOptions> serviceBusOptions, IConfiguration configuration)
+    public MessageService(DiscordSocketClient client, ServiceBusClient serviceBusClient, IOptions<DiscordOptions> discordOptions, IOptions<ServiceBusOptions> serviceBusOptions)
     {
         _client = client;
         _serviceBusClient = serviceBusClient;
@@ -60,7 +61,24 @@ public class MessageService : IMessageService
             };
         }
         
-        var sender = _serviceBusClient.CreateSender(_serviceBusOptions.QueueName);
+        ServiceBusSender sender;
+        if (message.Attachments.Any())
+        {
+            messageReceived.Attachments = message.Attachments.Select(x => new Attachment
+            {
+                Id = x.Id,
+                Url = x.Url,
+                ProxyUrl = x.ProxyUrl,
+                Filename = x.Filename,
+                Size = x.Size,
+                Height = x.Height,
+                Width = x.Width
+            }).ToList();
+            
+            sender = _serviceBusClient.CreateSender(_serviceBusOptions.UserAttachmentsQueueName);
+            await sender.SendMessageAsync(new ServiceBusMessage(JsonConvert.SerializeObject(messageReceived)));
+        }
+        sender = _serviceBusClient.CreateSender(_serviceBusOptions.UserMessagesQueueName);
         await sender.SendMessageAsync(new ServiceBusMessage(JsonConvert.SerializeObject(messageReceived)));
     }
 

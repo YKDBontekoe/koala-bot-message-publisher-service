@@ -43,7 +43,8 @@ public class MessageService : IMessageService
             Channel = new Channel
             {
                 Id = message.Channel.Id,
-                Name = message.Channel.Name
+                Name = message.Channel.Name,
+                IsNsfw = _client.GetChannel(message.Channel.Id) is SocketTextChannel { IsNsfw: true }
             },
             User = new User
             {
